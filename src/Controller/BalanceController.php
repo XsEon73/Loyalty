@@ -273,7 +273,7 @@ class BalanceController extends AbstractController
 
         if (count($error) > 0) {
             $data = [
-                'status' => 400,
+                'status' => 4001,
                 'errors' => 'Ошибка запроса',
             ];
 
