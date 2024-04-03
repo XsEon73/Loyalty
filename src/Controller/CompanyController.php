@@ -21,6 +21,9 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/companies', name: 'company_index', methods: ['GET'])]
+    /**
+     * Просмотр существующих компаний.
+     */
     public function index(CompanyRepository $companyRepository): Response
     {
         $companies = $companyRepository->findAll();
@@ -37,6 +40,9 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/companies/balances/{id}', name: 'company_balance', methods: ['GET'])]
+    /**
+     * Просмотр существующих балансов, которые привязаны к компании.
+     */
     public function getCompanyBalance(Company $company): Response
     {
         $balances = $company->getBalances();
@@ -53,6 +59,9 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/companies/{id}', name: 'company_show', methods: ['GET'])]
+    /**
+     * Просмотр одной компании.
+     */
     public function show(CompanyRepository $companyRepository, $id): Response
     {
         $company = $companyRepository->find($id);
@@ -74,6 +83,9 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/companies/create', name: 'company_create', methods: ['POST'])]
+    /**
+     * Создание компании.
+     */
     public function create(Request $request, EntityManagerInterface $em): Response
     {
         try {

@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 use App\Entity\Balance;
 use App\Entity\Transactions;
 use App\Repository\BalanceRepository;
@@ -14,16 +13,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 class BalanceController extends AbstractController
 {
     private $variables;
+
     public function __construct()
     {
         // Загрузка файла lang.php
-        $this->variables = include __DIR__ . '/../../Static/Variables.php';
+        $this->variables = include __DIR__.'/../../Static/Variables.php';
     }
 
     #[Route('/balances', name: 'balances_index', methods: ['GET'])]
+    /**
+     * Получение списка балансов.
+     */
     public function index(BalanceRepository $balanceRepository): Response
     {
         $balances = $balanceRepository->findAll();
@@ -42,6 +46,9 @@ class BalanceController extends AbstractController
     }
 
     #[Route('/balances/transaction', name: 'balance_transaction', methods: ['GET'])]
+    /**
+     * Просмотр транзакций по балансу.
+     */
     public function getBalanceTransaction(Request $request,
         BalanceRepository $balanceRepository,
         CompanyRepository $companyRepository): Response
@@ -74,6 +81,9 @@ class BalanceController extends AbstractController
     }
 
     #[Route('/balances/{phone}', name: 'balances_show', methods: ['GET'])]
+    /**
+     * Просмотр существуюих балансов по номеру телефона.
+     */
     public function show(BalanceRepository $balanceRepository, $phone): Response
     {
         $balancs = $balanceRepository->findBy(['phone' => $phone]);
@@ -98,6 +108,9 @@ class BalanceController extends AbstractController
     }
 
     #[Route('/balances/create', name: 'balance_create', methods: ['POST'])]
+    /**
+     * Создание баланса.
+     */
     public function create(Request $request, EntityManagerInterface $em,
         ValidatorInterface $validator,
         BalanceRepository $balanceRepository,
@@ -162,6 +175,9 @@ class BalanceController extends AbstractController
     }
 
     #[Route('/balances/modification', name: 'balance_modification', methods: ['POST'])]
+    /**
+     * Начисление/Списание с баланса по номеру телефона.
+     */
     public function modification(Request $request, EntityManagerInterface $em,
         ValidatorInterface $validator,
         BalanceRepository $balanceRepository,
@@ -230,6 +246,9 @@ class BalanceController extends AbstractController
     }
 
     #[Route('/balances/send', name: 'balance_send', methods: ['POST'])]
+    /**
+     * Перевод средств от пользователя к пользователю.
+     */
     public function send(Request $request, EntityManagerInterface $em,
         ValidatorInterface $validator,
         BalanceRepository $balanceRepository,
@@ -268,7 +287,7 @@ class BalanceController extends AbstractController
         if ($balanc1->getBalance() - $request['amount'] < 0) {
             $data = [
                 'status' => 422,
-                'errors' => $this->variables['error_negative_balance_after_change' ],
+                'errors' => $this->variables['error_negative_balance_after_change'],
             ];
 
             return new JsonResponse($data, 422);
