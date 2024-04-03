@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+
 use App\Entity\Balance;
 use App\Entity\Transactions;
 use App\Repository\BalanceRepository;
@@ -13,9 +14,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
 class BalanceController extends AbstractController
 {
+    private $variables;
+    public function __construct()
+    {
+        // Загрузка файла lang.php
+        $this->variables = include __DIR__ . '/../../Static/Variables.php';
+    }
+
     #[Route('/balances', name: 'balances_index', methods: ['GET'])]
     public function index(BalanceRepository $balanceRepository): Response
     {
@@ -46,7 +53,7 @@ class BalanceController extends AbstractController
         if (!$balanc) {
             $data = [
                 'status' => 404,
-                'errors' => 'Баланс не найден',
+                'errors' => $this->variables['error_balance_not_found'],
             ];
 
             return new JsonResponse($data, 404);
@@ -73,7 +80,7 @@ class BalanceController extends AbstractController
         if (!$balancs) {
             $data = [
                 'status' => 404,
-                'errors' => 'Баланс не найден',
+                'errors' => $this->variables['error_balance_not_found'],
             ];
 
             return new JsonResponse($data, 404);
@@ -102,7 +109,7 @@ class BalanceController extends AbstractController
             'company' => $companyRepository->find($request['companyId'])])) {
             $data = [
                 'status' => 409,
-                'errors' => 'Такой баланс уже существует',
+                'errors' => $this->variables['error_balance_already_exists'],
             ];
 
             return new JsonResponse($data, 409);
@@ -112,7 +119,7 @@ class BalanceController extends AbstractController
         if ($request['balance'] < 0) {
             $data = [
                 'status' => 422,
-                'errors' => 'Баланс не может быть меньше нуля',
+                'errors' => $this->variables['error_balance_negative'],
             ];
 
             return new JsonResponse($data, 422);
@@ -128,7 +135,7 @@ class BalanceController extends AbstractController
         if (count($error) > 0) {
             $data = [
                 'status' => 400,
-                'errors' => 'Ошибка запроса',
+                'errors' => $this->variables['error_request'],
             ];
 
             return new JsonResponse($data, 400);
@@ -148,7 +155,7 @@ class BalanceController extends AbstractController
 
         $data = [
             'status' => 200,
-            'success' => 'Баланс успешно создан',
+            'success' => $this->variables['success_balance_created'],
         ];
 
         return new JsonResponse($data, 200);
@@ -167,7 +174,7 @@ class BalanceController extends AbstractController
         if (!$balanc) {
             $data = [
                 'status' => 404,
-                'errors' => 'Баланс с таким номером не сущетсвует',
+                'errors' => $this->variables['error_balance_not_found'],
             ];
 
             return new JsonResponse($data, 404);
@@ -177,7 +184,7 @@ class BalanceController extends AbstractController
         if ($currentBalance < 0) {
             $data = [
                 'status' => 422,
-                'errors' => 'Баланс не может быть меньше нуля',
+                'errors' => $this->variables['error_balance_negative'],
             ];
 
             return new JsonResponse($data, 420);
@@ -189,7 +196,7 @@ class BalanceController extends AbstractController
         if (count($error) > 0) {
             $data = [
                 'status' => 400,
-                'errors' => 'Ошибка запроса',
+                'errors' => $this->variables['error_request'],
             ];
 
             return new JsonResponse($data, 400);
@@ -216,7 +223,7 @@ class BalanceController extends AbstractController
 
         $data = [
             'status' => 200,
-            'success' => 'Баланс успешно изменен',
+            'success' => $this->variables['success_balance_modified'],
         ];
 
         return new JsonResponse($data, 242);
@@ -235,7 +242,7 @@ class BalanceController extends AbstractController
         if (!$balanc1) {
             $data = [
                 'status' => 404,
-                'errors' => 'Баланс отправителя не существует',
+                'errors' => $this->variables['error_sender_balance_not_exists'],
             ];
 
             return new JsonResponse($data, 404);
@@ -245,7 +252,7 @@ class BalanceController extends AbstractController
         if (!$balanc2) {
             $data = [
                 'status' => 404,
-                'errors' => 'Баланс получателя не существует',
+                'errors' => $this->variables['error_recipient_balance_not_exists'],
             ];
 
             return new JsonResponse($data, 404);
@@ -253,7 +260,7 @@ class BalanceController extends AbstractController
         if ($request['amount'] < 0) {
             $data = [
                 'status' => 422,
-                'errors' => 'Нельзя передать сумму меньше нуля',
+                'errors' => $this->variables['error_negative_amount'],
             ];
 
             return new JsonResponse($data, 422);
@@ -261,7 +268,7 @@ class BalanceController extends AbstractController
         if ($balanc1->getBalance() - $request['amount'] < 0) {
             $data = [
                 'status' => 422,
-                'errors' => 'Сумма баланса у отправителя после изменения не может быть меньше нуля',
+                'errors' => $this->variables['error_negative_balance_after_change' ],
             ];
 
             return new JsonResponse($data, 422);
@@ -274,7 +281,7 @@ class BalanceController extends AbstractController
         if (count($error) > 0) {
             $data = [
                 'status' => 400,
-                'errors' => 'Ошибка запроса',
+                'errors' => $this->variables['error_request'],
             ];
 
             return new JsonResponse($data, 400);
@@ -284,7 +291,7 @@ class BalanceController extends AbstractController
         if (count($error) > 0) {
             $data = [
                 'status' => 400,
-                'errors' => 'Ошибка запроса',
+                'errors' => $this->variables['error_request'],
             ];
 
             return new JsonResponse($data, 400);
@@ -317,7 +324,7 @@ class BalanceController extends AbstractController
 
         $data = [
             'status' => 200,
-            'success' => 'Сумма успешло отправлена',
+            'success' => $this->variables['success_amount_sent'],
         ];
 
         return new JsonResponse($data, 200);

@@ -13,6 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CompanyController extends AbstractController
 {
+    private mixed $variables;
+
+    public function __construct()
+    {
+        $this->variables = include __DIR__.'/../../Static/Variables.php';
+    }
+
     #[Route('/companies', name: 'company_index', methods: ['GET'])]
     public function index(CompanyRepository $companyRepository): Response
     {
@@ -29,7 +36,7 @@ class CompanyController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/companies/{id}/balances', name: 'company_balance', methods: ['GET'])]
+    #[Route('/companies/balances/{id}', name: 'company_balance', methods: ['GET'])]
     public function getCompanyBalance(Company $company): Response
     {
         $balances = $company->getBalances();
@@ -52,7 +59,7 @@ class CompanyController extends AbstractController
         if (!$company) {
             $data = [
                 'status' => 404,
-                'errors' => 'Компания не найдена',
+                'errors' => $this->variables['error_company_not_found'],
             ];
 
             return new JsonResponse($data, 404);
@@ -66,7 +73,7 @@ class CompanyController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/companies/', name: 'company_create', methods: ['POST'])]
+    #[Route('/companies/create', name: 'company_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $em): Response
     {
         try {
@@ -79,14 +86,14 @@ class CompanyController extends AbstractController
 
             $data = [
                 'status' => 200,
-                'success' => 'Компания успешно создана',
+                'success' => $this->variables['success_company_created'],
             ];
 
             return new JsonResponse($data, 200);
         } catch (\Exception $e) {
             $data = [
-                'status' => 422,
-                'errors' => 'Недостоверные данные',
+                'status' => 400,
+                'errors' => $this->variables['error_request'],
             ];
 
             return new JsonResponse($data, 422);
